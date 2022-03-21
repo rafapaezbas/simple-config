@@ -10,9 +10,9 @@ const defaultConfig = {
 const { getConfig, setConfig } = require('simple-config')(configFolder, defaultConfig)
 
 const config = await getConfig()
-console.log(config.foo) # bar
+console.log(config.foo) // bar
 
 config.hello = 'world'
-await setConfig(config) # persist config in configFolder
+await setConfig(config) // persist config in configFolder
 
  ``` 
