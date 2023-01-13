@@ -1,12 +1,16 @@
 {
-  "name": "simple-config",
-  "version": "1.0.0",
+  "name": "@rafapaezbas/simple-config",
+  "version": "2.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
+    "fix": "standard --fix",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "standard": "^17.0.0"
+  }
 }

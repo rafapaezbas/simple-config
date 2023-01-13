@@ -1,35 +1,49 @@
-const path = require('path')
-const fs = require('fs')
+const { join } = require('path')
+const { mkdir, stat, writeFile, readFile } = require('fs/promises')
 
-var buffered = null
+let buffered = null
 
 module.exports = (configFolder, defaultConfig) => {
-  const setConfig = async (obj) => {
-    buffered = obj
-    const configFile = path.join(configFolder, 'config.json')
-    return await fs.promises.writeFile(configFile, JSON.stringify(obj))
+  const configFile = join(configFolder, 'config.json')
+
+  const setConfig = async (key, value) => {
+    buffered[key] = value
+    return writeFile(configFile, JSON.stringify(buffered))
   }
-  const getConfig = async () => {
-    if (!fs.existsSync(configFolder)) {
-      fs.mkdirSync(configFolder)
-      setConfig(defaultConfig)
-      return defaultConfig
-    } else {
-      if(buffered) {
-        return buffered
-      }else {
-        try {
-          const configFile = path.join(configFolder, 'config.json')
-          return JSON.parse((await fs.promises.readFile(configFile)).toString())
-        } catch (err) {
-          return {}
-        }
-      }
+
+  const getConfig = async (key) => {
+    if (await !exists(configFolder)) {
+      await mkdir(configFolder)
+    }
+
+    if (!(await exists(configFile))) {
+      await setConfig(defaultConfig)
+      return defaultConfig[key]
+    }
+
+    if (buffered) {
+      return buffered[key]
+    }
+
+    try {
+      buffered = JSON.parse((await readFile(configFile)).toString())
+      return buffered[key]
+    } catch (err) {
+
     }
   }
+
   return {
     setConfig,
     getConfig
   }
 }
 
+async function exists (path) {
+  try {
+    await stat(path)
+    return true
+  } catch (err) {
+    return false
+  }
+}
