@@ -22,7 +22,7 @@ module.exports = async (configFolder, defaultConfig) => {
     return writeFile(configFile, JSON.stringify(buffered))
   }
 
-  const getConfig = async (key) => {
+  const getConfig = (key) => {
     return buffered[key]
   }
 
