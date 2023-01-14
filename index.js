@@ -3,8 +3,19 @@ const { mkdir, stat, writeFile, readFile } = require('fs/promises')
 
 let buffered = null
 
-module.exports = (configFolder, defaultConfig) => {
+module.exports = async (configFolder, defaultConfig) => {
   const configFile = join(configFolder, 'config.json')
+
+  if (await !exists(configFolder)) {
+    await mkdir(configFolder)
+  }
+
+  if (!(await exists(configFile))) {
+    await writeFile(configFile, JSON.stringify(defaultConfig))
+    buffered = defaultConfig
+  } else {
+    buffered = JSON.parse((await readFile(configFile)).toString())
+  }
 
   const setConfig = async (key, value) => {
     buffered[key] = value
@@ -12,25 +23,7 @@ module.exports = (configFolder, defaultConfig) => {
   }
 
   const getConfig = async (key) => {
-    if (await !exists(configFolder)) {
-      await mkdir(configFolder)
-    }
-
-    if (!(await exists(configFile))) {
-      await setConfig(defaultConfig)
-      return defaultConfig[key]
-    }
-
-    if (buffered) {
-      return buffered[key]
-    }
-
-    try {
-      buffered = JSON.parse((await readFile(configFile)).toString())
-      return buffered[key]
-    } catch (err) {
-
-    }
+    return buffered[key]
   }
 
   return {
